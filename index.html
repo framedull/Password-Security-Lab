@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Security Lab</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input[type="password"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+        .strength-bar {
+            height: 8px;
+            width: 100%;
+            background-color: #eee;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        .progress {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background-color 0.3s;
+        }
+        .status-text {
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: right;
+        }
+        .criteria {
+            list-style: none;
+            padding: 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .criteria li {
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+        }
+        .criteria li::before {
+            content: "❌";
+            margin-right: 8px;
+        }
+        .criteria li.valid::before {
+            content: "✔️";
+        }
+        .criteria li.valid {
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Password Security Lab</h2>
+    <input type="password" id="passwordInput" placeholder="ทดลองกรอกรหัสผ่านที่นี่...">
+    
+    <div class="strength-bar">
+        <div id="progress" class="progress"></div>
+    </div>
+    <div id="statusText" class="status-text">ระดับความปลอดภัย: รอการตรวจสอบ</div>
+
+    <ul class="criteria">
+        <li id="length">ความยาวอย่างน้อย 8 ตัวอักษร</li>
+        <li id="uppercase">มีอักษรตัวพิมพ์ใหญ่ (A-Z)</li>
+        <li id="lowercase">มีอักษรตัวพิมพ์เล็ก (a-z)</li>
+        <li id="number">มีตัวเลข (0-9)</li>
+        <li id="special">มีตัวอักษรพิเศษ (เช่น @, $, !, %)</li>
+    </ul>
+</div>
+
+<script>
+    const passwordInput = document.getElementById('passwordInput');
+    const progress = document.getElementById('progress');
+    const statusText = document.getElementById('statusText');
+
+    // แก้ไขฟังก์ชันการเช็กค่าให้ถูกต้องและแม่นยำขึ้น
+    function checkPassword() {
+        const val = passwordInput.value;
+
+        if (val.length === 0) {
+            progress.style.width = '0%';
+            statusText.innerText = 'ระดับความปลอดภัย: รอการตรวจสอบ';
+            statusText.style.color = '#333';
+            resetCriteria();
+            return;
+        }
+
+        let score = 0;
+
+        // 1. ตรวจสอบความยาว
+        const isLengthValid = val.length >= 8;
+        toggleCriteria('length', isLengthValid);
+        if (isLengthValid) score++;
+
+        // 2. ตรวจสอบตัวพิมพ์ใหญ่
+        const isUpperValid = /[A-Z]/.test(val);
+        toggleCriteria('uppercase', isUpperValid);
+        if (isUpperValid) score++;
+
+        // 3. ตรวจสอบตัวพิมพ์เล็ก
+        const isLowerValid = /[a-z]/.test(val);
+        toggleCriteria('lowercase', isLowerValid);
+        if (isLowerValid) score++;
+
+        // 4. ตรวจสอบตัวเลข
+        const isNumberValid = /[0-9]/.test(val);
+        toggleCriteria('number', isNumberValid);
+        if (isNumberValid) score++;
+
+        // 5. ตรวจสอบตัวอักษรพิเศษ
+        const isSpecialValid = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(val);
+        toggleCriteria('special', isSpecialValid);
+        if (isSpecialValid) score++;
+
+        // อัปเดตแถบความแรง (Strength Bar)
+        const percentage = (score / 5) * 100;
+        progress.style.width = `${percentage}%`;
+
+        // ประเมินผล
+        if (score <= 2) {
+            progress.style.backgroundColor = '#dc3545'; // แดง
+            statusText.innerText = 'ระดับความปลอดภัย: ต่ำมาก (เสี่ยงโดน Hack)';
+            statusText.style.color = '#dc3545';
+        } else if (score <= 4) {
+            progress.style.backgroundColor = '#ffc107'; // เหลือง
+            statusText.innerText = 'ระดับความปลอดภัย: ปานกลาง';
+            statusText.style.color = '#ffc107';
+        } else {
+            progress.style.backgroundColor = '#28a745'; // เขียว
+            statusText.innerText = 'ระดับความปลอดภัย: แข็งแกร่งมาก!';
+            statusText.style.color = '#28a745';
+        }
+    }
+
+    function toggleCriteria(id, isValid) {
+        const element = document.getElementById(id);
+        if (isValid) {
+            element.classList.add('valid');
+        } else {
+            element.classList.remove('valid');
+        }
+    }
+
+    function resetCriteria() {
+        const keys = ['length', 'uppercase', 'lowercase', 'number', 'special'];
+        keys.forEach(key => document.getElementById(key).classList.remove('valid'));
+    }
+
+    // เรียกใช้งานฟังก์ชันเมื่อมีการพิมพ์
+    passwordInput.addEventListener('input', checkPassword);
+</script>
+</body>
+</html>
