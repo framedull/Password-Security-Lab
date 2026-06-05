@@ -3,16 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Security Lab</title>
+    <title>Cybersecurity Lab - Password Security Hub</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f6f9;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
+            justify-content: flex-start;
+            min-height: 100vh;
             margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
         }
         .container {
             background: white;
@@ -20,14 +23,22 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 450px;
+            margin-bottom: 25px;
         }
         h2 {
             text-align: center;
             color: #333;
+            margin-top: 0;
             margin-bottom: 20px;
         }
-        input[type="password"] {
+        h3 {
+            color: #007bff;
+            margin-top: 0;
+            border-bottom: 2px solid #eeF2F7;
+            padding-bottom: 10px;
+        }
+        input[type="text"], input[type="password"] {
             width: 100%;
             padding: 12px;
             margin-bottom: 15px;
@@ -37,7 +48,7 @@
             font-size: 16px;
             transition: border-color 0.3s;
         }
-        input[type="password"]:focus {
+        input:focus {
             border-color: #007bff;
             outline: none;
         }
@@ -80,6 +91,70 @@
         .criteria li.valid {
             color: #28a745;
         }
+        
+        /* สไตล์สำหรับปุ่มและหน้าจอจำลอง */
+        .btn-action {
+            width: 100%;
+            color: white;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-bottom: 5px;
+        }
+        .btn-hack { background-color: #dc3545; }
+        .btn-hack:hover { background-color: #bd2130; }
+        .btn-check2 { background-color: #ffc107; color: #333; }
+        .btn-check2:hover { background-color: #e0a800; }
+        .btn-gen { background-color: #28a745; }
+        .btn-gen:hover { background-color: #218838; }
+        
+        .btn-action:disabled {
+            background-color: #6c757d;
+            color: white;
+            cursor: not-allowed;
+        }
+        .hack-screen {
+            background-color: #1e1e1e;
+            color: #39ff14;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            min-height: 80px;
+            box-sizing: border-box;
+            font-size: 15px;
+            word-break: break-all;
+        }
+        .result-box {
+            margin-top: 15px;
+            font-weight: bold;
+            font-size: 15px;
+        }
+
+        /* สไตล์เสริมสำหรับ Workshop 3 */
+        .setting-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 15px;
+        }
+        .radio-group label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
     </style>
 </head>
 <body>
@@ -102,86 +177,232 @@
     </ul>
 </div>
 
+<div class="container" style="border-top: 4px solid #dc3545;">
+    <h3>Workshop 1: จำลองการแฮก (Brute Force)</h3>
+    <p style="font-size: 14px; color: #555;">ใส่รหัสผ่านสั้นๆ (1-5 หลัก เช่น <code>abc</code> หรือ <code>1234</code>) เพื่อดูการทำงานของคอมพิวเตอร์แฮกเกอร์</p>
+    
+    <input type="text" id="targetPassword" placeholder="ใส่รหัสผ่านที่จะลองแฮก (เช่น abc)" maxlength="8">
+    <button id="startHackBtn" class="btn-action btn-hack">🎯 เริ่มจำลองการ Brute Force</button>
+    
+    <div class="hack-screen" id="hackScreen">> ระบบพร้อมจำลองการโจมตี...</div>
+    <div class="result-box" id="hackResult"></div>
+</div>
+
+<div class="container" style="border-top: 4px solid #ffc107;">
+    <h3>Workshop 2: กับดักคำยอดฮิต (Dictionary Attack)</h3>
+    <p style="font-size: 14px; color: #555;">ลองกรอกคำค้นยอดฮิต เช่น <code>password123</code>, <code>admin@2026</code>, <code>iloveyou</code> หรือรหัสที่คุณคิดว่าเดากนยาก เพื่อเช็กกับพจนานุกรมแฮกเกอร์</p>
+    
+    <input type="text" id="dictPasswordInput" placeholder="ลองใส่รหัสผ่านที่นี่...">
+    <button id="checkDictBtn" class="btn-action btn-check2">🔍 ตรวจสอบด้วย Dictionary</button>
+    
+    <div class="hack-screen" id="dictScreen" style="color: #ffc107;">> รอกำลังตรวจสอบกับฐานข้อมูล...</div>
+    <div class="result-box" id="dictResult"></div>
+</div>
+
+<div class="container" style="border-top: 4px solid #28a745;">
+    <h3>Workshop 3: เครื่องมือสร้างรหัสผ่านที่ปลอดภัย</h3>
+    <p style="font-size: 14px; color: #555;">สลัดวิธีตั้งรหัสผ่านแบบเก่าๆ ทิ้งไป แล้วทดลองใช้ระบบช่วยสุ่มเพื่อความปลอดภัยสูงสุด</p>
+    
+    <div class="radio-group">
+        <label><input type="radio" name="genType" value="random" checked> สุ่มตัวอักษรมั่ว (Random)</label>
+        <label><input type="radio" name="genType" value="passphrase"> สุ่มวลีจำง่าย (Passphrase)</label>
+    </div>
+
+    <div class="setting-row">
+        <label for="passwordLength">ความยาวในการสุ่ม: <span id="lengthVal" style="font-weight:bold; color:#28a745;">12</span> <span id="unitText">ตัวอักษร</span></label>
+        <input type="range" id="passwordLength" min="6" max="20" value="12" style="width: 50%;">
+    </div>
+
+    <button id="genBtn" class="btn-action btn-gen">⚙️ เจนเนอเรทรหัสผ่านใหม่</button>
+
+    <div class="hack-screen" id="genScreen" style="color: #00ffff; min-height: 60px; text-align: center; font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; border: 1px dashed #00ffff;">
+        [ รหัสผ่านสุ่มของคุณจะแสดงขึ้นที่นี่ ]
+    </div>
+    <div class="result-box" id="genNote" style="font-size: 13px; color: #666; font-weight: normal; text-align: center; line-height: 1.4;"></div>
+</div>
+
 <script>
+    // --- [ส่วนที่ 0: ระบบตรวจความปลอดภัยเดิม] ---
     const passwordInput = document.getElementById('passwordInput');
     const progress = document.getElementById('progress');
     const statusText = document.getElementById('statusText');
 
-    // แก้ไขฟังก์ชันการเช็กค่าให้ถูกต้องและแม่นยำขึ้น
     function checkPassword() {
         const val = passwordInput.value;
-
         if (val.length === 0) {
-            progress.style.width = '0%';
-            statusText.innerText = 'ระดับความปลอดภัย: รอการตรวจสอบ';
-            statusText.style.color = '#333';
-            resetCriteria();
-            return;
+            progress.style.width = '0%'; statusText.innerText = 'ระดับความปลอดภัย: รอการตรวจสอบ';
+            statusText.style.color = '#333'; resetCriteria(); return;
         }
-
         let score = 0;
+        const isLengthValid = val.length >= 8; toggleCriteria('length', isLengthValid); if (isLengthValid) score++;
+        const isUpperValid = /[A-Z]/.test(val); toggleCriteria('uppercase', isUpperValid); if (isUpperValid) score++;
+        const isLowerValid = /[a-z]/.test(val); toggleCriteria('lowercase', isLowerValid); if (isLowerValid) score++;
+        const isNumberValid = /[0-9]/.test(val); toggleCriteria('number', isNumberValid); if (isNumberValid) score++;
+        const isSpecialValid = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(val); toggleCriteria('special', isSpecialValid); if (isSpecialValid) score++;
 
-        // 1. ตรวจสอบความยาว
-        const isLengthValid = val.length >= 8;
-        toggleCriteria('length', isLengthValid);
-        if (isLengthValid) score++;
-
-        // 2. ตรวจสอบตัวพิมพ์ใหญ่
-        const isUpperValid = /[A-Z]/.test(val);
-        toggleCriteria('uppercase', isUpperValid);
-        if (isUpperValid) score++;
-
-        // 3. ตรวจสอบตัวพิมพ์เล็ก
-        const isLowerValid = /[a-z]/.test(val);
-        toggleCriteria('lowercase', isLowerValid);
-        if (isLowerValid) score++;
-
-        // 4. ตรวจสอบตัวเลข
-        const isNumberValid = /[0-9]/.test(val);
-        toggleCriteria('number', isNumberValid);
-        if (isNumberValid) score++;
-
-        // 5. ตรวจสอบตัวอักษรพิเศษ
-        const isSpecialValid = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/.test(val);
-        toggleCriteria('special', isSpecialValid);
-        if (isSpecialValid) score++;
-
-        // อัปเดตแถบความแรง (Strength Bar)
-        const percentage = (score / 5) * 100;
-        progress.style.width = `${percentage}%`;
-
-        // ประเมินผล
-        if (score <= 2) {
-            progress.style.backgroundColor = '#dc3545'; // แดง
-            statusText.innerText = 'ระดับความปลอดภัย: ต่ำมาก (เสี่ยงโดน Hack)';
-            statusText.style.color = '#dc3545';
-        } else if (score <= 4) {
-            progress.style.backgroundColor = '#ffc107'; // เหลือง
-            statusText.innerText = 'ระดับความปลอดภัย: ปานกลาง';
-            statusText.style.color = '#ffc107';
-        } else {
-            progress.style.backgroundColor = '#28a745'; // เขียว
-            statusText.innerText = 'ระดับความปลอดภัย: แข็งแกร่งมาก!';
-            statusText.style.color = '#28a745';
-        }
+        const percentage = (score / 5) * 100; progress.style.width = `${percentage}%`;
+        if (score <= 2) { progress.style.backgroundColor = '#dc3545'; statusText.innerText = 'ระดับความปลอดภัย: ต่ำมาก (เสี่ยงโดน Hack)'; statusText.style.color = '#dc3545'; }
+        else if (score <= 4) { progress.style.backgroundColor = '#ffc107'; statusText.innerText = 'ระดับความปลอดภัย: ปานกลาง'; statusText.style.color = '#ffc107'; }
+        else { progress.style.backgroundColor = '#28a745'; statusText.innerText = 'ระดับความปลอดภัย: แข็งแกร่งมาก!'; statusText.style.color = '#28a745'; }
     }
-
-    function toggleCriteria(id, isValid) {
-        const element = document.getElementById(id);
-        if (isValid) {
-            element.classList.add('valid');
-        } else {
-            element.classList.remove('valid');
-        }
-    }
-
-    function resetCriteria() {
-        const keys = ['length', 'uppercase', 'lowercase', 'number', 'special'];
-        keys.forEach(key => document.getElementById(key).classList.remove('valid'));
-    }
-
-    // เรียกใช้งานฟังก์ชันเมื่อมีการพิมพ์
+    function toggleCriteria(id, isValid) { const element = document.getElementById(id); if (element) { if (isValid) element.classList.add('valid'); else element.classList.remove('valid'); } }
+    function resetCriteria() { const keys = ['length', 'uppercase', 'lowercase', 'number', 'special']; keys.forEach(key => { const el = document.getElementById(key); if(el) el.classList.remove('valid'); }); }
     passwordInput.addEventListener('input', checkPassword);
+
+
+    // --- [ส่วนที่ 1: ระบบจำลอง Brute Force] ---
+    const targetPasswordInput = document.getElementById('targetPassword');
+    const startHackBtn = document.getElementById('startHackBtn');
+    const hackScreen = document.getElementById('hackScreen');
+    const hackResult = document.getElementById('hackResult');
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+
+    startHackBtn.addEventListener('click', async () => {
+        const target = targetPasswordInput.value;
+        if (!target) { alert('กรุณากรอกรหัสผ่านเพื่อทดลองแฮกก่อนครับ!'); return; }
+        startHackBtn.disabled = true; targetPasswordInput.disabled = true; hackResult.innerText = "";
+        hackScreen.innerText = "> กำลังเริ่มสแกนและสุ่มรหัสผ่าน...\n";
+        let startTime = performance.now(); let attempts = 0; let crackedPassword = "";
+
+        for (let i = 0; i < target.length; i++) {
+            let targetChar = target[i];
+            for (let j = 0; j < charset.length; j++) {
+                attempts++; let currentChar = charset[j];
+                hackScreen.innerText = `> กำลังสุ่มหลักที่ ${i+1}: ${crackedPassword}${currentChar}\n> จำนวนครั้งที่สุ่มแล้ว: ${attempts} ครั้ง`;
+                await new Promise(resolve => setTimeout(resolve, 5));
+                if (currentChar === targetChar) { crackedPassword += currentChar; break; }
+            }
+        }
+        let endTime = performance.now(); let timeTaken = ((endTime - startTime) / 1000).toFixed(2);
+        hackScreen.innerText = `> [SUCCESS] ถอดรหัสสำเร็จ!\n> รหัสผ่านคือ: ${crackedPassword}\n> สุ่มทั้งหมด: ${attempts} ครั้ง`;
+        hackResult.style.color = "#dc3545"; hackResult.innerText = `💥 แฮกสำเร็จในเวลา ${timeTaken} วินาที (สุ่มไป ${attempts} ครั้ง)`;
+        startHackBtn.disabled = false; targetPasswordInput.disabled = false;
+    });
+
+
+    // --- [ส่วนที่ 2: จำลอง Dictionary Attack] ---
+    const dictPasswordInput = document.getElementById('dictPasswordInput');
+    const checkDictBtn = document.getElementById('checkDictBtn');
+    const dictScreen = document.getElementById('dictScreen');
+    const dictResult = document.getElementById('dictResult');
+
+    const hackerDictionary = [
+        "password", "password123", "password@123", "p@ssword", "p@ss123",
+        "123456", "12345678", "123456789", "1234567890", "000000", "111111",
+        "qwerty", "qwertyuiop", "asdfghjkl", "zxcvbnm",
+        "admin", "admin123", "admin@123", "admin2026", "administrator", "root",
+        "iloveyou", "iloveme", "i-love-you", "forever", "superman", "secret",
+        "hello", "hello123", "welcome", "welcome123", "letmein", "letmein123",
+        "monkey", "dragon", "shadow", "matrix", "football", "soccer", "baseball",
+        "computer", "internet", "security", "hacker", "jordan", "michael",
+        "2020", "2021", "2022", "2023", "2024", "2025", "2026",
+        "asdf", "asdf1234", "love", "lovelove", "love1234", "smile", "beautiful", "happy",
+        "charlie", "thomas", "jessica", "bangkok", "thailand", "liverpool", "manchester",
+        "god12345", "jesus123", "mariah", "pokemon"
+    ];
+
+    checkDictBtn.addEventListener('click', async () => {
+        const inputStr = dictPasswordInput.value.trim();
+        if (!inputStr) { alert('กรุณากรอกรหัสผ่านเพื่อตรวจสอบคำฮิตก่อนครับ!'); return; }
+
+        checkDictBtn.disabled = true; dictPasswordInput.disabled = true; dictResult.innerText = "";
+        dictScreen.style.color = "#ffc107"; dictScreen.innerText = "> กำลังเปิดฐานข้อมูล Wordlist ของแฮกเกอร์...\n";
+        await new Promise(resolve => setTimeout(resolve, 600));
+        
+        const lowerInput = inputStr.toLowerCase();
+        let isFound = false; let matchedWord = "";
+        dictScreen.innerText += `> กำลังเทียบรหัส "${inputStr}" กับฐานข้อมูลพจนานุกรม...\n`;
+
+        for(let i = 0; i < hackerDictionary.length; i++) {
+            let dictWord = hackerDictionary[i];
+            dictScreen.innerText = `> [กำลังเทียบคีย์ที่ ${i+1}/${hackerDictionary.length}]: ตรวจเช็กคำว่า "${dictWord}"`;
+            await new Promise(resolve => setTimeout(resolve, 80));
+
+            if (lowerInput === dictWord || lowerInput.includes(dictWord)) {
+                isFound = true; matchedWord = dictWord; break;
+            }
+        }
+
+        if (isFound) {
+            dictScreen.style.color = "#dc3545";
+            dictScreen.innerText = `> [🚨 ALERT] พบคำอันตรายในพจนานุกรมแฮกเกอร์!\n> ตรวจเจอคำว่า: "${matchedWord}" ซ่อนอยู่ในรหัสของคุณ`;
+            dictResult.style.color = "#dc3545"; dictResult.innerText = `❌ ไม่ปลอดภัย! รหัสผ่านนี้โดนเจาะได้ง่ายผ่าน Dictionary Attack`;
+        } else {
+            dictScreen.style.color = "#39ff14";
+            dictScreen.innerText = `> [✔️ CLEAN] ปลอดภัย\n> ไม่พบคำศัพท์ยอดฮิตนี้ในฐานข้อมูลพจนานุกรมพื้นฐาน`;
+            dictResult.style.color = "#28a745"; dictResult.innerText = `✔️ รหัสผ่านเบื้องต้นไม่ได้หยิบคำสุ่มเสี่ยงยอดฮิตมาใช้ ดีมากครับ!`;
+        }
+        checkDictBtn.disabled = false; dictPasswordInput.disabled = false;
+    });
+
+
+    // --- [ส่วนที่ 3: เครื่องมือสร้างรหัสผ่าน (Workshop 3 ใหม่)] ---
+    const passwordLengthInput = document.getElementById('passwordLength');
+    const lengthVal = document.getElementById('lengthVal');
+    const unitText = document.getElementById('unitText');
+    const genBtn = document.getElementById('genBtn');
+    const genScreen = document.getElementById('genScreen');
+    const genNote = document.getElementById('genNote');
+    const genTypeRadios = document.getElementsByName('genType');
+
+    // คลังคำศัพท์สำหรับเจนเนอเรท Passphrase
+    const wordPool = [
+        "blue", "green", "happy", "fast", "sleepy", "bright", "silent", "brave",
+        "tiger", "elephant", "monkey", "river", "mountain", "forest", "rocket", "castle",
+        "running", "flying", "jumping", "coding", "singing", "baking", "coffee", "pizza",
+        "ocean", "desert", "shadow", "crystal", "golden", "silver", "planet", "guitar"
+    ];
+
+    // ปรับเปลี่ยนหน่วยและข้อความเงื่อนไขตามชนิดที่เลือก
+    genTypeRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.value === 'random') {
+                passwordLengthInput.min = 6;
+                passwordLengthInput.max = 20;
+                passwordLengthInput.value = 12;
+                unitText.innerText = "ตัวอักษร";
+            } else {
+                passwordLengthInput.min = 3;
+                passwordLengthInput.max = 8;
+                passwordLengthInput.value = 4;
+                unitText.innerText = "คำศัพท์";
+            }
+            lengthVal.innerText = passwordLengthInput.value;
+        });
+    });
+
+    passwordLengthInput.addEventListener('input', () => {
+        lengthVal.innerText = passwordLengthInput.value;
+    });
+
+    genBtn.addEventListener('click', () => {
+        const selectedType = document.querySelector('input[name="genType"]:checked').value;
+        const length = parseInt(passwordLengthInput.value);
+        let result = "";
+
+        if (selectedType === "random") {
+            // สุ่มตัวอักษรมั่วผสมตัวเลขและสัญลักษณ์
+            const pool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * pool.length);
+                result += pool[randomIndex];
+            }
+            genNote.innerText = "🔒 รหัสประเภทนี้มี Entropy สูงและบอทแฮกยากมาก แต่จำยากเช่นกัน เหมาะสำหรับใช้งานร่วมกับโปรแกรมจดจำรหัสผ่าน (Password Manager)";
+        } else {
+            // สุ่มเป็นคำศัพท์เชื่อมด้วยขีดกลาง (Passphrase)
+            let chosenWords = [];
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * wordPool.length);
+                chosenWords.push(wordPool[randomIndex]);
+            }
+            // เพิ่มตัวเลขและอักษรพิเศษท้ายวลีเพื่อความปลอดภัยสูงขึ้น
+            result = chosenWords.join("-") + Math.floor(Math.random() * 89 + 10) + "!";
+            genNote.innerText = "💡 รหัสประเภทนี้เรียกว่า 'Passphrase' เน้นสร้างความปลอดภัยด้วยความยาวสูงสุดๆ มนุษย์สามารถจดจำภาพเป็นเรื่องราวสั้นๆ ได้ง่ายกว่าการสุ่มตัวอักษรมั่ว";
+        }
+
+        genScreen.innerText = result;
+    });
 </script>
+
 </body>
 </html>
