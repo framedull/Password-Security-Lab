@@ -70,7 +70,7 @@
             width: 100%;
         }
         .logo-container img {
-            max-width: 120px; /* ปรับขนาดความกว้างโลโก้ตามต้องการ */
+            max-width: 120px;
             height: auto;
             display: block;
             margin: 0 auto;
@@ -277,7 +277,7 @@
     <div id="ws-dictionary" class="tab-content">
         <div class="container" style="border-top: 4px solid #ffc107;">
             <h3>Workshop 2: กับดักคำยอดฮิต (Dictionary Attack)</h3>
-            <p style="font-size: 14px; color: #555;">ลองกรอกคำค้นยอดฮิต เช่น <code>password123</code>, <code>admin@2026</code>, <code>iloveyou</code> หรือรหัสที่คุณคิดว่าเดากนยาก เพื่อเช็กกับพจนานุกรมแฮกเกอร์</p>
+            <p style="font-size: 14px; color: #555;">ลองกรอกคำค้นยอดฮิต เพื่อเช็กกับพจนานุกรมแฮกเกอร์</p>
             
             <input type="text" id="dictPasswordInput" placeholder="ลองใส่รหัสผ่านที่นี่...">
             <button id="checkDictBtn" class="btn-action btn-check2">🔍 ตรวจสอบด้วย Dictionary</button>
@@ -316,20 +316,21 @@
 <script>
     // ⚙️ ระบบสลับหน้าแท็บ (Tab Switching Logic)
     function switchTab(tabId) {
-        // ซ่อนทุกเนื้อหาแท็บ
         const contents = document.querySelectorAll('.tab-content');
         contents.forEach(content => content.classList.remove('active'));
 
-        // เอาสถานะ active ออกจากทุกปุ่มบนเมนูบาร์
         const buttons = document.querySelectorAll('.nav-btn');
         buttons.forEach(btn => btn.classList.remove('active'));
 
-        // แสดงเนื้อหาแท็บและตั้งค่าปุ่มที่ถูกเลือก
         document.getElementById(tabId).classList.add('active');
         
-        // ค้นหาและไฮไลต์ปุ่มที่ทำหน้าที่เรียก tabId นั้นๆ
         const currentButton = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes(tabId));
         if (currentButton) currentButton.classList.add('active');
+    }
+
+    // ฟังก์ชันส่วนกลางสำหรับเช็กภาษาไทย
+    function hasThaiChar(text) {
+        return /[ก-๙]/.test(text);
     }
 
     // --- [ส่วนที่ 0: ระบบตรวจความปลอดภัยเดิม] ---
@@ -339,6 +340,17 @@
 
     function checkPassword() {
         const val = passwordInput.value;
+
+        // 🚨 ดักจับภาษาไทยที่หน้าแรก Lab
+        if (hasThaiChar(val)) {
+            progress.style.width = '100%';
+            progress.style.backgroundColor = '#dc3545';
+            statusText.innerText = '❌ ผิดพลาด: ห้ามใช้ภาษาไทยในรหัสผ่าน (ไม่รองรับระบบสากล)';
+            statusText.style.color = '#dc3545';
+            resetCriteria();
+            return;
+        }
+
         if (val.length === 0) {
             progress.style.width = '0%'; statusText.innerText = 'ระดับความปลอดภัย: รอการตรวจสอบ';
             statusText.style.color = '#333'; resetCriteria(); return;
@@ -365,23 +377,38 @@
     const startHackBtn = document.getElementById('startHackBtn');
     const hackScreen = document.getElementById('hackScreen');
     const hackResult = document.getElementById('hackResult');
-    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    
+    // 🛠️ ปรับปรุงแล้ว: เพิ่มสัญลักษณ์สากลอย่างปลอดภัย ป้องกันปัญหา String Escape ค้างบน GitHub
+    const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:',./<>?~`\"\\";
 
     startHackBtn.addEventListener('click', async () => {
         const target = targetPasswordInput.value;
         if (!target) { alert('กรุณากรอกรหัสผ่านเพื่อทดลองแฮกก่อนครับ!'); return; }
+
+        // 🚨 ดักจับภาษาไทยที่ Workshop 1 และแสดงผลบนหน้าจอทันที
+        if (hasThaiChar(target)) {
+            hackScreen.style.color = "#dc3545";
+            hackScreen.innerText = "> ❌ ผิดพลาด: ไม่รองรับภาษาไทยในระบบแฮกเกอร์สากล\n> กรุณาเปลี่ยนเป็นภาษาอังกฤษ ตัวเลข หรืออักษรพิเศษครับ";
+            hackResult.style.color = "#dc3545";
+            hackResult.innerText = "ไม่สามารถดำเนินการได้ เนื่องจากพบอักษรภาษาไทย";
+            return;
+        }
+
         startHackBtn.disabled = true; targetPasswordInput.disabled = true; hackResult.innerText = "";
+        hackScreen.style.color = "#39ff14";
         hackScreen.innerText = "> กำลังเริ่มสแกนและสุ่มรหัสผ่าน...\n";
         let startTime = performance.now(); let attempts = 0; let crackedPassword = "";
 
         for (let i = 0; i < target.length; i++) {
             let targetChar = target[i];
+            let found = false;
             for (let j = 0; j < charset.length; j++) {
                 attempts++; let currentChar = charset[j];
                 hackScreen.innerText = `> กำลังสุ่มหลักที่ ${i+1}: ${crackedPassword}${currentChar}\n> จำนวนครั้งที่สุ่มแล้ว: ${attempts} ครั้ง`;
                 await new Promise(resolve => setTimeout(resolve, 5));
-                if (currentChar === targetChar) { crackedPassword += currentChar; break; }
+                if (currentChar === targetChar) { crackedPassword += currentChar; found = true; break; }
             }
+            if (!found) { crackedPassword += targetChar; }
         }
         let endTime = performance.now(); let timeTaken = ((endTime - startTime) / 1000).toFixed(2);
         hackScreen.innerText = `> [SUCCESS] ถอดรหัสสำเร็จ!\n> รหัสผ่านคือ: ${crackedPassword}\n> สุ่มทั้งหมด: ${attempts} ครั้ง`;
@@ -415,6 +442,15 @@
         const inputStr = dictPasswordInput.value.trim();
         if (!inputStr) { alert('กรุณากรอกรหัสผ่านเพื่อตรวจสอบคำฮิตก่อนครับ!'); return; }
 
+        // 🚨 ดักจับภาษาไทยที่ Workshop 2 และแสดงผลบนหน้าจอทันที
+        if (hasThaiChar(inputStr)) {
+            dictScreen.style.color = "#dc3545";
+            dictScreen.innerText = "> ❌ ผิดพลาด: ฐานข้อมูลพจนานุกรมแฮกเกอร์สากลไม่รองรับภาษาไทย\n> กรุณาเปลี่ยนไปตรวจสอบด้วยคำภาษาอังกฤษครับ";
+            dictResult.style.color = "#dc3545";
+            dictResult.innerText = "ไม่สามารถดำเนินการได้ เนื่องจากพบอักษรภาษาไทย";
+            return;
+        }
+
         checkDictBtn.disabled = true; dictPasswordInput.disabled = true; dictResult.innerText = "";
         dictScreen.style.color = "#ffc107"; dictScreen.innerText = "> กำลังเปิดฐานข้อมูล Wordlist ของแฮกเกอร์...\n";
         await new Promise(resolve => setTimeout(resolve, 600));
@@ -426,7 +462,7 @@
         for(let i = 0; i < hackerDictionary.length; i++) {
             let dictWord = hackerDictionary[i];
             dictScreen.innerText = `> [กำลังเทียบคีย์ที่ ${i+1}/${hackerDictionary.length}]: ตรวจเช็กคำว่า "${dictWord}"`;
-            await new Promise(resolve => setTimeout(resolve, 80));
+            await new Promise(resolve => setTimeout(resolve, 40));
 
             if (lowerInput === dictWord || lowerInput.includes(dictWord)) {
                 isFound = true; matchedWord = dictWord; break;
@@ -446,7 +482,7 @@
     });
 
 
-    // --- [ส่วนที่ 3: เครื่องมือสร้างรหัสผ่าน (Workshop 3 ใหม่)] ---
+    // --- [ส่วนที่ 3: เครื่องมือสร้างรหัสผ่าน (Workshop 3)] ---
     const passwordLengthInput = document.getElementById('passwordLength');
     const lengthVal = document.getElementById('lengthVal');
     const unitText = document.getElementById('unitText');
@@ -489,7 +525,7 @@
         let result = "";
 
         if (selectedType === "random") {
-            const pool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+            const pool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:',./<>?~`";
             for (let i = 0; i < length; i++) {
                 const randomIndex = Math.floor(Math.random() * pool.length);
                 result += pool[randomIndex];
