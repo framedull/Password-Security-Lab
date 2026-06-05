@@ -14,18 +14,87 @@
             justify-content: flex-start;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 0;
             box-sizing: border-box;
         }
+
+        /* เมนูบาร์ด้านบน (Navigation Bar) */
+        .navbar {
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-sizing: border-box;
+        }
+        .nav-btn {
+            background: none;
+            border: none;
+            padding: 10px 16px;
+            font-size: 15px;
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+        .nav-btn:hover {
+            background-color: #f0f2f5;
+            color: #007bff;
+        }
+        .nav-btn.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        /* พื้นที่เนื้อหาหลัก */
+        .main-content {
+            padding: 30px 20px;
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* โลโก้แอปพลิเคชัน */
+        .logo-container {
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+        }
+        .logo-container img {
+            max-width: 120px; /* ปรับขนาดความกว้างโลโก้ตามต้องการ */
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
         .container {
             background: white;
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 450px;
+            box-sizing: border-box;
             margin-bottom: 25px;
         }
+
+        /* คลาสสำหรับการซ่อนข้อมูลหน้าอื่น */
+        .tab-content {
+            display: none;
+            width: 100%;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
         h2 {
             text-align: center;
             color: #333;
@@ -159,69 +228,110 @@
 </head>
 <body>
 
-<div class="container">
-    <h2>Password Security Lab</h2>
-    <input type="password" id="passwordInput" placeholder="ทดลองกรอกรหัสผ่านที่นี่...">
-    
-    <div class="strength-bar">
-        <div id="progress" class="progress"></div>
-    </div>
-    <div id="statusText" class="status-text">ระดับความปลอดภัย: รอการตรวจสอบ</div>
-
-    <ul class="criteria">
-        <li id="length">ความยาวอย่างน้อย 8 ตัวอักษร</li>
-        <li id="uppercase">มีอักษรตัวพิมพ์ใหญ่ (A-Z)</li>
-        <li id="lowercase">มีอักษรตัวพิมพ์เล็ก (a-z)</li>
-        <li id="number">มีตัวเลข (0-9)</li>
-        <li id="special">มีตัวอักษรพิเศษ (เช่น @, $, !, %)</li>
-    </ul>
+<div class="navbar">
+    <button class="nav-btn active" onclick="switchTab('lab-main')">🏠 หน้าแรก (Lab)</button>
+    <button class="nav-btn" onclick="switchTab('ws-bruteforce')">🎯 Workshop 1</button>
+    <button class="nav-btn" onclick="switchTab('ws-dictionary')">🔍 Workshop 2</button>
+    <button class="nav-btn" onclick="switchTab('ws-generator')">⚙️ Workshop 3</button>
 </div>
 
-<div class="container" style="border-top: 4px solid #dc3545;">
-    <h3>Workshop 1: จำลองการแฮก (Brute Force)</h3>
-    <p style="font-size: 14px; color: #555;">ใส่รหัสผ่านสั้นๆ (1-5 หลัก เช่น <code>abc</code> หรือ <code>1234</code>) เพื่อดูการทำงานของคอมพิวเตอร์แฮกเกอร์</p>
-    
-    <input type="text" id="targetPassword" placeholder="ใส่รหัสผ่านที่จะลองแฮก (เช่น abc)" maxlength="8">
-    <button id="startHackBtn" class="btn-action btn-hack">🎯 เริ่มจำลองการ Brute Force</button>
-    
-    <div class="hack-screen" id="hackScreen">> ระบบพร้อมจำลองการโจมตี...</div>
-    <div class="result-box" id="hackResult"></div>
-</div>
+<div class="main-content">
 
-<div class="container" style="border-top: 4px solid #ffc107;">
-    <h3>Workshop 2: กับดักคำยอดฮิต (Dictionary Attack)</h3>
-    <p style="font-size: 14px; color: #555;">ลองกรอกคำค้นยอดฮิต เช่น <code>password123</code>, <code>admin@2026</code>, <code>iloveyou</code> หรือรหัสที่คุณคิดว่าเดากนยาก เพื่อเช็กกับพจนานุกรมแฮกเกอร์</p>
-    
-    <input type="text" id="dictPasswordInput" placeholder="ลองใส่รหัสผ่านที่นี่...">
-    <button id="checkDictBtn" class="btn-action btn-check2">🔍 ตรวจสอบด้วย Dictionary</button>
-    
-    <div class="hack-screen" id="dictScreen" style="color: #ffc107;">> รอกำลังตรวจสอบกับฐานข้อมูล...</div>
-    <div class="result-box" id="dictResult"></div>
-</div>
+    <div id="lab-main" class="tab-content active">
+        <div class="logo-container">
+           <img id="appLogo" src="nurse-logo.png" alt="App Logo" onerror="this.style.display='none';">
+        </div>
 
-<div class="container" style="border-top: 4px solid #28a745;">
-    <h3>Workshop 3: เครื่องมือสร้างรหัสผ่านที่ปลอดภัย</h3>
-    <p style="font-size: 14px; color: #555;">สลัดวิธีตั้งรหัสผ่านแบบเก่าๆ ทิ้งไป แล้วทดลองใช้ระบบช่วยสุ่มเพื่อความปลอดภัยสูงสุด</p>
-    
-    <div class="radio-group">
-        <label><input type="radio" name="genType" value="random" checked> สุ่มตัวอักษรมั่ว (Random)</label>
-        <label><input type="radio" name="genType" value="passphrase"> สุ่มวลีจำง่าย (Passphrase)</label>
+        <div class="container">
+            <h2>Password Security Lab</h2>
+            <input type="password" id="passwordInput" placeholder="ทดลองกรอกรหัสผ่านที่นี่...">
+            
+            <div class="strength-bar">
+                <div id="progress" class="progress"></div>
+            </div>
+            <div id="statusText" class="status-text">ระดับความปลอดภัย: รอการตรวจสอบ</div>
+
+            <ul class="criteria">
+                <li id="length">ความยาวอย่างน้อย 8 ตัวอักษร</li>
+                <li id="uppercase">มีอักษรตัวพิมพ์ใหญ่ (A-Z)</li>
+                <li id="lowercase">มีอักษรตัวพิมพ์เล็ก (a-z)</li>
+                <li id="number">มีตัวเลข (0-9)</li>
+                <li id="special">มีตัวอักษรพิเศษ (เช่น @, $, !, %)</li>
+            </ul>
+        </div>
     </div>
 
-    <div class="setting-row">
-        <label for="passwordLength">ความยาวในการสุ่ม: <span id="lengthVal" style="font-weight:bold; color:#28a745;">12</span> <span id="unitText">ตัวอักษร</span></label>
-        <input type="range" id="passwordLength" min="6" max="20" value="12" style="width: 50%;">
+    <div id="ws-bruteforce" class="tab-content">
+        <div class="container" style="border-top: 4px solid #dc3545;">
+            <h3>Workshop 1: จำลองการแฮก (Brute Force)</h3>
+            <p style="font-size: 14px; color: #555;">ใส่รหัสผ่านสั้นๆ (1-5 หลัก เช่น <code>abc</code> หรือ <code>1234</code>) เพื่อดูการทำงานของคอมพิวเตอร์แฮกเกอร์</p>
+            
+            <input type="text" id="targetPassword" placeholder="ใส่รหัสผ่านที่จะลองแฮก (เช่น abc)" maxlength="8">
+            <button id="startHackBtn" class="btn-action btn-hack">🎯 เริ่มจำลองการ Brute Force</button>
+            
+            <div class="hack-screen" id="hackScreen">> ระบบพร้อมจำลองการโจมตี...</div>
+            <div class="result-box" id="hackResult"></div>
+        </div>
     </div>
 
-    <button id="genBtn" class="btn-action btn-gen">⚙️ เจนเนอเรทรหัสผ่านใหม่</button>
-
-    <div class="hack-screen" id="genScreen" style="color: #00ffff; min-height: 60px; text-align: center; font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; border: 1px dashed #00ffff;">
-        [ รหัสผ่านสุ่มของคุณจะแสดงขึ้นที่นี่ ]
+    <div id="ws-dictionary" class="tab-content">
+        <div class="container" style="border-top: 4px solid #ffc107;">
+            <h3>Workshop 2: กับดักคำยอดฮิต (Dictionary Attack)</h3>
+            <p style="font-size: 14px; color: #555;">ลองกรอกคำค้นยอดฮิต เช่น <code>password123</code>, <code>admin@2026</code>, <code>iloveyou</code> หรือรหัสที่คุณคิดว่าเดากนยาก เพื่อเช็กกับพจนานุกรมแฮกเกอร์</p>
+            
+            <input type="text" id="dictPasswordInput" placeholder="ลองใส่รหัสผ่านที่นี่...">
+            <button id="checkDictBtn" class="btn-action btn-check2">🔍 ตรวจสอบด้วย Dictionary</button>
+            
+            <div class="hack-screen" id="dictScreen" style="color: #ffc107;">> รอกำลังตรวจสอบกับฐานข้อมูล...</div>
+            <div class="result-box" id="dictResult"></div>
+        </div>
     </div>
-    <div class="result-box" id="genNote" style="font-size: 13px; color: #666; font-weight: normal; text-align: center; line-height: 1.4;"></div>
+
+    <div id="ws-generator" class="tab-content">
+        <div class="container" style="border-top: 4px solid #28a745;">
+            <h3>Workshop 3: เครื่องมือสร้างรหัสผ่านที่ปลอดภัย</h3>
+            <p style="font-size: 14px; color: #555;">สลัดวิธีตั้งรหัสผ่านแบบเก่าๆ ทิ้งไป แล้วทดลองใช้ระบบช่วยสุ่มเพื่อความปลอดภัยสูงสุด</p>
+            
+            <div class="radio-group">
+                <label><input type="radio" name="genType" value="random" checked> สุ่มตัวอักษรมั่ว (Random)</label>
+                <label><input type="radio" name="genType" value="passphrase"> สุ่มวลีจำง่าย (Passphrase)</label>
+            </div>
+
+            <div class="setting-row">
+                <label for="passwordLength">ความยาวในการสุ่ม: <span id="lengthVal" style="font-weight:bold; color:#28a745;">12</span> <span id="unitText">ตัวอักษร</span></label>
+                <input type="range" id="passwordLength" min="6" max="20" value="12" style="width: 50%;">
+            </div>
+
+            <button id="genBtn" class="btn-action btn-gen">⚙️ เจนเนอเรทรหัสผ่านใหม่</button>
+
+            <div class="hack-screen" id="genScreen" style="color: #00ffff; min-height: 60px; text-align: center; font-size: 18px; font-weight: bold; display: flex; align-items: center; justify-content: center; border: 1px dashed #00ffff;">
+                [ รหัสผ่านสุ่มของคุณจะแสดงขึ้นที่นี่ ]
+            </div>
+            <div class="result-box" id="genNote" style="font-size: 13px; color: #666; font-weight: normal; text-align: center; line-height: 1.4;"></div>
+        </div>
+    </div>
+
 </div>
 
 <script>
+    // ⚙️ ระบบสลับหน้าแท็บ (Tab Switching Logic)
+    function switchTab(tabId) {
+        // ซ่อนทุกเนื้อหาแท็บ
+        const contents = document.querySelectorAll('.tab-content');
+        contents.forEach(content => content.classList.remove('active'));
+
+        // เอาสถานะ active ออกจากทุกปุ่มบนเมนูบาร์
+        const buttons = document.querySelectorAll('.nav-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        // แสดงเนื้อหาแท็บและตั้งค่าปุ่มที่ถูกเลือก
+        document.getElementById(tabId).classList.add('active');
+        
+        // ค้นหาและไฮไลต์ปุ่มที่ทำหน้าที่เรียก tabId นั้นๆ
+        const currentButton = Array.from(buttons).find(btn => btn.getAttribute('onclick').includes(tabId));
+        if (currentButton) currentButton.classList.add('active');
+    }
+
     // --- [ส่วนที่ 0: ระบบตรวจความปลอดภัยเดิม] ---
     const passwordInput = document.getElementById('passwordInput');
     const progress = document.getElementById('progress');
@@ -345,7 +455,6 @@
     const genNote = document.getElementById('genNote');
     const genTypeRadios = document.getElementsByName('genType');
 
-    // คลังคำศัพท์สำหรับเจนเนอเรท Passphrase
     const wordPool = [
         "blue", "green", "happy", "fast", "sleepy", "bright", "silent", "brave",
         "tiger", "elephant", "monkey", "river", "mountain", "forest", "rocket", "castle",
@@ -353,7 +462,6 @@
         "ocean", "desert", "shadow", "crystal", "golden", "silver", "planet", "guitar"
     ];
 
-    // ปรับเปลี่ยนหน่วยและข้อความเงื่อนไขตามชนิดที่เลือก
     genTypeRadios.forEach(radio => {
         radio.addEventListener('change', (e) => {
             if (e.target.value === 'random') {
@@ -381,7 +489,6 @@
         let result = "";
 
         if (selectedType === "random") {
-            // สุ่มตัวอักษรมั่วผสมตัวเลขและสัญลักษณ์
             const pool = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
             for (let i = 0; i < length; i++) {
                 const randomIndex = Math.floor(Math.random() * pool.length);
@@ -389,13 +496,11 @@
             }
             genNote.innerText = "🔒 รหัสประเภทนี้มี Entropy สูงและบอทแฮกยากมาก แต่จำยากเช่นกัน เหมาะสำหรับใช้งานร่วมกับโปรแกรมจดจำรหัสผ่าน (Password Manager)";
         } else {
-            // สุ่มเป็นคำศัพท์เชื่อมด้วยขีดกลาง (Passphrase)
             let chosenWords = [];
             for (let i = 0; i < length; i++) {
                 const randomIndex = Math.floor(Math.random() * wordPool.length);
                 chosenWords.push(wordPool[randomIndex]);
             }
-            // เพิ่มตัวเลขและอักษรพิเศษท้ายวลีเพื่อความปลอดภัยสูงขึ้น
             result = chosenWords.join("-") + Math.floor(Math.random() * 89 + 10) + "!";
             genNote.innerText = "💡 รหัสประเภทนี้เรียกว่า 'Passphrase' เน้นสร้างความปลอดภัยด้วยความยาวสูงสุดๆ มนุษย์สามารถจดจำภาพเป็นเรื่องราวสั้นๆ ได้ง่ายกว่าการสุ่มตัวอักษรมั่ว";
         }
