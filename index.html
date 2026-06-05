@@ -107,25 +107,60 @@
             border-bottom: 2px solid #eeF2F7;
             padding-bottom: 10px;
         }
+        
+        /* สไตล์ช่องรหัสผ่านพร้อมปุ่มเปิดตา */
+        .password-wrapper {
+            position: relative;
+            width: 100%;
+            margin-bottom: 15px;
+        }
         input[type="text"], input[type="password"] {
             width: 100%;
             padding: 12px;
-            margin-bottom: 15px;
+            padding-right: 45px; /* เว้นพื้นที่ด้านขวาให้ปุ่มดวงตา */
+            margin-bottom: 0;
             border: 2px solid #ddd;
             border-radius: 6px;
             box-sizing: border-box;
             font-size: 16px;
             transition: border-color 0.3s;
         }
+        .ws-input-box {
+            margin-bottom: 15px !important;
+            padding-right: 12px !important;
+        }
         input:focus {
             border-color: #007bff;
             outline: none;
         }
+        
+        /* ปุ่มเปิด-ปิดดวงตา */
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: #777;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+        }
+        .toggle-password:hover {
+            color: #007bff;
+        }
+
         .strength-bar {
             height: 8px;
             width: 100%;
             background-color: #eee;
             border-radius: 4px;
+            margin-top: 15px;
             margin-bottom: 15px;
             overflow: hidden;
         }
@@ -244,7 +279,11 @@
 
         <div class="container">
             <h2>Password Security Lab</h2>
-            <input type="password" id="passwordInput" placeholder="ทดลองกรอกรหัสผ่านที่นี่...">
+            
+            <div class="password-wrapper">
+                <input type="password" id="passwordInput" placeholder="ทดลองกรอกรหัสผ่านที่นี่...">
+                <button type="button" id="togglePasswordBtn" class="toggle-password" title="เปิด/ปิดการมองเห็นรหัสผ่าน">👁️</button>
+            </div>
             
             <div class="strength-bar">
                 <div id="progress" class="progress"></div>
@@ -266,7 +305,7 @@
             <h3>Workshop 1: จำลองการแฮก (Brute Force)</h3>
             <p style="font-size: 14px; color: #555;">ใส่รหัสผ่านสั้นๆ (1-5 หลัก เช่น <code>abc</code> หรือ <code>1234</code>) เพื่อดูการทำงานของคอมพิวเตอร์แฮกเกอร์</p>
             
-            <input type="text" id="targetPassword" placeholder="ใส่รหัสผ่านที่จะลองแฮก (เช่น abc)" maxlength="8">
+            <input type="text" id="targetPassword" class="ws-input-box" placeholder="ใส่รหัสผ่านที่จะลองแฮก (เช่น abc)" maxlength="8">
             <button id="startHackBtn" class="btn-action btn-hack">🎯 เริ่มจำลองการ Brute Force</button>
             
             <div class="hack-screen" id="hackScreen">> ระบบพร้อมจำลองการโจมตี...</div>
@@ -279,7 +318,7 @@
             <h3>Workshop 2: กับดักคำยอดฮิต (Dictionary Attack)</h3>
             <p style="font-size: 14px; color: #555;">ลองกรอกคำค้นยอดฮิต เพื่อเช็กกับพจนานุกรมแฮกเกอร์</p>
             
-            <input type="text" id="dictPasswordInput" placeholder="ลองใส่รหัสผ่านที่นี่...">
+            <input type="text" id="dictPasswordInput" class="ws-input-box" placeholder="ลองใส่รหัสผ่านที่นี่...">
             <button id="checkDictBtn" class="btn-action btn-check2">🔍 ตรวจสอบด้วย Dictionary</button>
             
             <div class="hack-screen" id="dictScreen" style="color: #ffc107;">> รอกำลังตรวจสอบกับฐานข้อมูล...</div>
@@ -333,10 +372,18 @@
         return /[ก-๙]/.test(text);
     }
 
-    // --- [ส่วนที่ 0: ระบบตรวจความปลอดภัยเดิม] ---
+    // --- [ส่วนที่ 0: ระบบตรวจความปลอดภัยเดิม + ฟีเจอร์เปิด/ปิดตา] ---
     const passwordInput = document.getElementById('passwordInput');
+    const togglePasswordBtn = document.getElementById('togglePasswordBtn');
     const progress = document.getElementById('progress');
     const statusText = document.getElementById('statusText');
+
+    // โค้ดทำงานของปุ่มสลับการมองเห็นรหัสผ่าน
+    togglePasswordBtn.addEventListener('click', () => {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        togglePasswordBtn.innerText = type === 'password' ? '👁️' : '🙈';
+    });
 
     function checkPassword() {
         const val = passwordInput.value;
@@ -378,14 +425,12 @@
     const hackScreen = document.getElementById('hackScreen');
     const hackResult = document.getElementById('hackResult');
     
-    // 🛠️ ปรับปรุงแล้ว: เพิ่มสัญลักษณ์สากลอย่างปลอดภัย ป้องกันปัญหา String Escape ค้างบน GitHub
     const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:',./<>?~`\"\\";
 
     startHackBtn.addEventListener('click', async () => {
         const target = targetPasswordInput.value;
         if (!target) { alert('กรุณากรอกรหัสผ่านเพื่อทดลองแฮกก่อนครับ!'); return; }
 
-        // 🚨 ดักจับภาษาไทยที่ Workshop 1 และแสดงผลบนหน้าจอทันที
         if (hasThaiChar(target)) {
             hackScreen.style.color = "#dc3545";
             hackScreen.innerText = "> ❌ ผิดพลาด: ไม่รองรับภาษาไทยในระบบแฮกเกอร์สากล\n> กรุณาเปลี่ยนเป็นภาษาอังกฤษ ตัวเลข หรืออักษรพิเศษครับ";
@@ -442,7 +487,6 @@
         const inputStr = dictPasswordInput.value.trim();
         if (!inputStr) { alert('กรุณากรอกรหัสผ่านเพื่อตรวจสอบคำฮิตก่อนครับ!'); return; }
 
-        // 🚨 ดักจับภาษาไทยที่ Workshop 2 และแสดงผลบนหน้าจอทันที
         if (hasThaiChar(inputStr)) {
             dictScreen.style.color = "#dc3545";
             dictScreen.innerText = "> ❌ ผิดพลาด: ฐานข้อมูลพจนานุกรมแฮกเกอร์สากลไม่รองรับภาษาไทย\n> กรุณาเปลี่ยนไปตรวจสอบด้วยคำภาษาอังกฤษครับ";
